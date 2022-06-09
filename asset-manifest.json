@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/csf-gddtool-v4/static/css/main.41f7e064.chunk.css",
+    "main.js": "/csf-gddtool-v4/static/js/main.c5190cff.chunk.js",
+    "main.js.map": "/csf-gddtool-v4/static/js/main.c5190cff.chunk.js.map",
+    "runtime-main.js": "/csf-gddtool-v4/static/js/runtime-main.a9c26616.js",
+    "runtime-main.js.map": "/csf-gddtool-v4/static/js/runtime-main.a9c26616.js.map",
+    "static/css/2.4215ef6b.chunk.css": "/csf-gddtool-v4/static/css/2.4215ef6b.chunk.css",
+    "static/js/2.1eef00db.chunk.js": "/csf-gddtool-v4/static/js/2.1eef00db.chunk.js",
+    "static/js/2.1eef00db.chunk.js.map": "/csf-gddtool-v4/static/js/2.1eef00db.chunk.js.map",
+    "index.html": "/csf-gddtool-v4/index.html",
+    "static/css/2.4215ef6b.chunk.css.map": "/csf-gddtool-v4/static/css/2.4215ef6b.chunk.css.map",
+    "static/css/main.41f7e064.chunk.css.map": "/csf-gddtool-v4/static/css/main.41f7e064.chunk.css.map",
+    "static/js/2.1eef00db.chunk.js.LICENSE.txt": "/csf-gddtool-v4/static/js/2.1eef00db.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.a9c26616.js",
+    "static/css/2.4215ef6b.chunk.css",
+    "static/js/2.1eef00db.chunk.js",
+    "static/css/main.41f7e064.chunk.css",
+    "static/js/main.c5190cff.chunk.js"
+  ]
+}
