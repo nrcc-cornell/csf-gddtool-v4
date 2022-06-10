@@ -35,7 +35,10 @@ window.jQuery = jQuery;
 const HOST = 'https://maps.google.com/maps/api/js';
 const KEY = 'AIzaSyDv5pQYe9kRbolVUt0o8XSXSQl4g8BHrrQ';
 const URL_google_api = `${HOST}?key=${KEY}`;
-const URL_location_dialog = 'http://tools.climatesmartfarming.org/gddtool_react_v3/js/location-dialog-min.js'
+//const URL_location_dialog = 'http://tools.climatesmartfarming.org/gddtool_react_v3/js/location-dialog-min.js'
+//const URL_location_dialog = 'https://cicss.github.io/csf-location-picker-react/assets/location-dialog-min.js'
+const URL_location_dialog = 'https://nrcc-cornell.github.io/csf-gddtool-v4/js/location-dialog-min.js'
+//const URL_location_dialog = 'https://nrcc-cornell.github.io/csf-location-picker-react/js/location-dialog-min.js'
 
 class LocationPicker extends Component {
 
