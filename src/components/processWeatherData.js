@@ -3,6 +3,46 @@
 
 import moment from 'moment';
 
+function shiftDataBackOneDay(data) {
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+
+    function subtractOneDayFromDateString(d) {
+      let result = moment(d,'YYYY-MM-DD').subtract(1,'days').format('YYYY-MM-DD')
+      return result
+    }
+
+    let dataShifted = data.map(item => [subtractOneDayFromDateString(item[0]),item[1],item[2]])
+    // only return data starting with expected first date
+    return dataShifted.slice(1)
+}
+
+function calcGddAcc(data,plantingDate,gddBase) {
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    let sum
+
+    function calcGdd(mx,mn,b,limits=null) {
+        if (limits) {
+            let mx_lim = limits[0]
+            let mn_lim = limits[1]
+            mx = mx>mx_lim ? mx_lim : mx
+            mn = mn<mn_lim ? mn_lim : mn
+        }
+        return Math.max(...[((mx+mn)/2.) - b, 0])
+    }
+
+    //let startDateMMDD = plantingDate.slice(0,2)+'-'+plantingDate.slice(3,5);
+    let zeroDateMMDD = moment(plantingDate,'MM/DD/YYYY').subtract(1,'day').format('MM-DD')
+    let base = (gddBase==='86/50') ? 50 : gddBase
+    let limits = (gddBase==='86/50') ? [86,50] : null
+    let dataAccSincePlantingDate = data.map((sum = 0, item =>
+      //[item[0], item[0].slice(5)===startDateMMDD ? sum = 0 : sum += calcGdd(item[1],item[2],base,limits)]
+      [item[0], item[0].slice(5)===zeroDateMMDD ? sum = 0 : sum += calcGdd(item[1],item[2],base,limits)]
+    ))
+    return dataAccSincePlantingDate
+}
+
 function getSelectedYearData(data,plantingDate) {
     // ------------------------------------------------------------------------
     // ------------------------------------------------------------------------
@@ -92,9 +132,6 @@ function getFreezeData(data,plantingDate,freezeThreshold) {
     //var plantingDateFormatted = plantingDate.slice(6,10)+'-'+plantingDate.slice(0,2)+'-'+plantingDate.slice(3,5);
     var selectedYear = plantingDate.slice(6,10);
     var currentYear = moment().format('YYYY')
-    //var dataFiltered = null;
-    //let datesOfFirstFreeze_15yr = ["2022-10-29", "2022-10-07", "2022-10-12", "2022-10-10", "2022-10-06", "2022-10-09", "2022-09-17", "2022-10-12", "2022-10-18", "2022-10-11", "2022-10-01", "2022-10-16", "2022-10-05", "2022-09-19", "2022-11-04"]
-    //let datesOfLastFreeze_15yr = ["2022-04-24", "2022-05-01", "2022-05-01", "2022-05-02", "2022-05-06", "2022-05-08", "2022-05-10", "2022-05-12", "2022-05-12", "2022-05-12", "2022-05-15", "2022-05-15", "2022-05-20", "2022-05-23", "2022-05-24"]
     let years = []
     let seasonStartDates
     let datesOfFirstFreeze_15yr = []
@@ -153,7 +190,20 @@ function getFreezeData(data,plantingDate,freezeThreshold) {
     }
 }
 
-export function processWeatherData(data,plantingDate,freezeThreshold) {
+function getFirstFcstDate(lastObsDate) {
+    // ------------------------------------------------------------------------
+    // Since lastObsDate is provided as "morning observation date", this date
+    // serves as the firstFcstDate when dates are shifted to reflect the dates
+    // of heating occurrence (array dates for display are shifted in this manner).
+    // Therefore, we can simply assign lastObsDate as the firstFcstDate without
+    // any further date manipulation.
+    // ------------------------------------------------------------------------
+    return {
+      'firstFcstDate':lastObsDate
+    }
+}
+
+export function processWeatherData(dataDailyExtremes,lastObsDate,plantingDate,gddBase,freezeThreshold) {
 
     // ------------------------------------------------------------------------
     //
@@ -163,22 +213,20 @@ export function processWeatherData(data,plantingDate,freezeThreshold) {
 
     var results = {}
 
-    //console.log(plantingDate)
-    //console.log(data)
+    // Shift dates back one day, since data reflect morning observations, and we want GDD obs
+    // dates to reflect when the heating occurred.
+    let dataDailyExtremesShifted = shiftDataBackOneDay(dataDailyExtremes)
+
+    // calculate accumulated GDD data
+    let data = calcGddAcc(dataDailyExtremesShifted,plantingDate,gddBase)
 
     results = {
         ...results,
         ...getSelectedYearData(data,plantingDate),
         ...getExtremesAndAverageData(data,plantingDate),
-        ...getFreezeData(data,plantingDate,freezeThreshold),
+        ...getFreezeData(dataDailyExtremes,plantingDate,freezeThreshold),
+        ...getFirstFcstDate(lastObsDate),
      }
-
-    //if (freezeThreshold) {
-    //  results = {
-    //    ...results,
-    //    ...getFreezeData(data,plantingDate,freezeThreshold),
-    //  }
-    //}
 
     return results
     //return {

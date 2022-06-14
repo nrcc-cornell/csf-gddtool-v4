@@ -22,9 +22,12 @@ import ls from 'local-storage';
 
 // Components
 import LoadPointData from './LoadPointData';
+import LoadPointDataFcst from './LoadPointDataFcst';
 import DisplayChart from './DisplayChart';
 import UserInput from './UI/UserInput';
 import VarPopover from './VarPopover';
+import {HelpMain} from "./HelpToolContent";
+import HelpToolPopover from "./HelpToolPopover";
 
 import { processWeatherData } from './processWeatherData';
 
@@ -62,39 +65,66 @@ class ToolContents extends Component {
     componentDidMount() {
         // Find all data for a given location
         if ((this.state.locations && this.state.selected)) {
-          this.handleDataIsLoadingChange(true)
-          setTimeout(() => {
-            LoadPointData({param:this.getAcisParamsGDD()})
-              .then(response => {
-                this.handleDataChange(response)
-                this.handleDataIsLoadingChange(false)
-              })
-            },
-            1000
-          );
+          this.loadAllData()
         }
     }
 
     componentDidUpdate(prevProps,prevState) {
-        if (prevState.selected!==this.state.selected ||
-            prevState.locations[prevState.selected]['planting_date']!==this.state.locations[this.state.selected]['planting_date'] ||
-            prevState.locations[prevState.selected]['gdd_base']!==this.state.locations[this.state.selected]['gdd_base']) {
-          this.handleDataIsLoadingChange(true)
-          setTimeout(() => {
-            LoadPointData({param:this.getAcisParamsGDD()})
-              .then(response => {
-                this.handleDataChange(response)
-                this.handleDataIsLoadingChange(false)
-              })
-            },
-            1000
-          );
+        if (prevState.selected!==this.state.selected) {
+          this.loadAllData()
         }
         if (prevState.locations!==this.state.locations) { ls.set('CSF-GDDTOOL.locations',this.state.locations) }
         if (prevState.selected!==this.state.selected) { ls.set('CSF-GDDTOOL.selected',this.state.selected) }
     }
 
-    getAcisParamsGDD = () => {
+    addOneDayToStringDate = (d) => {
+      return moment(d,'YYYY-MM-DD').add(1,'days').format('YYYY-MM-DD')
+    }
+
+    subtractOneDayToStringDate = (d) => {
+      return moment(d,'YYYY-MM-DD').subtract(1,'days').format('YYYY-MM-DD')
+    }
+
+    loadAllData = () => {
+          this.handleDataIsLoadingChange(true)
+          setTimeout(() => {
+
+            LoadPointData({param:this.getAcisParamsObs()})
+              .then(response_obs => {
+
+                //handle observed data
+                let data_obs = response_obs['data']
+                let last_obs_date = data_obs.slice(-1)[0][0]
+
+                LoadPointDataFcst({param:this.getAcisParamsFcst(last_obs_date)})
+                  .then(response_fcst => {
+
+                    //handle forecast data
+                    // - need to convert string temperatures to int
+                    // - need to convert dates one day forward for consistency with morning obs
+                    let data_fcst = []
+                    if ('dlyData' in response_fcst) {
+                      data_fcst.push(...response_fcst['dlyData'].map(item => [this.addOneDayToStringDate(item[0].split('T')[0]),parseInt(item[2],10),parseInt(item[3],10)]))
+                    }
+                    if ('dlyFcstData' in response_fcst) {
+                      data_fcst.push(...response_fcst['dlyFcstData'].map(item => [this.addOneDayToStringDate(item[0].split('T')[0]),parseInt(item[1],10),parseInt(item[2],10)]))
+                    }
+                    data_fcst = data_fcst.filter(item => item[0] > last_obs_date)
+
+                    // combine obs and fcst data into one array
+                    let data_obs_fcst = data_obs.concat(data_fcst)
+                    let result = {'data':data_obs_fcst, 'last_obs_date':last_obs_date}
+
+                    this.handleDataChange(result)
+                    this.handleDataIsLoadingChange(false)
+                  })
+              })
+            },
+            1000
+          );
+    }
+
+    getAcisParamsObs = () => {
           return {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -105,20 +135,29 @@ class ToolContents extends Component {
               "grid":"nrcc-model",
               "elems":[
                 {
-                 "name":"gdd",
-                 "base":this.state.locations[this.state.selected]['gdd_base']==='86/50' ? 50 : parseInt(this.state.locations[this.state.selected]['gdd_base'],10),
-                 "limit":this.state.locations[this.state.selected]['gdd_base']==='86/50' ? [86,50] : [1000,-1000],
-                 "interval":[0,0,1],
-                 "duration":"std",
-                 "season_start":[parseInt(this.state.locations[this.state.selected]['planting_date'].slice(0,2),10),parseInt(this.state.locations[this.state.selected]['planting_date'].slice(3,5),10)],
-                 "reduce":"sum",
-                 "maxmissing":"0"
+                 "name":"maxt",
+                 "interval":[0,0,1]
                 },
                 {
                  "name":"mint",
                  "interval":[0,0,1]
                 }
               ]})
+          };
+    }
+
+    getAcisParamsFcst = (sdate) => {
+          return {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              "lat":this.state.locations[this.state.selected]['lat'],
+              "lon":this.state.locations[this.state.selected]['lng'],
+              "tzo":-5,
+              //"sdate":"2022061000",
+              "sdate":sdate.replaceAll("-","")+"00",
+              "edate":"now",
+              })
           };
     }
 
@@ -205,7 +244,9 @@ class ToolContents extends Component {
                         targetIsEnabled={this.state.targetIsEnabled}
                         chartWeatherData={
                           processWeatherData(this.state.pointData['data'],
+                          this.state.pointData['last_obs_date'],
                           this.state.locations[this.state.selected]['planting_date'],
+                          this.state.locations[this.state.selected]['gdd_base'],
                           this.state.locations[this.state.selected]['freeze_threshold'])
                         }
                         view={this.state.view}
@@ -237,10 +278,14 @@ class ToolContents extends Component {
 
                   <Grid item container direction="column" justify="top" alignItems="center" spacing={1} md>
                     <Hidden mdUp>
-                      {display_VarPopover}
+                        <Grid item>
+                          {display_VarPopover}
+                        </Grid>
                     </Hidden>
                     <Hidden smDown>
-                      {display_UserInput}
+                        <Grid item>
+                          {display_UserInput}
+                        </Grid>
                     </Hidden>
                   </Grid>
 
@@ -268,6 +313,11 @@ class ToolContents extends Component {
                             >
                               Season Outlook
                             </Button>
+                          }
+                        </Grid>
+                        <Grid item>
+                          {this.state.pointData && 
+                            <HelpToolPopover content={<HelpMain/>} />
                           }
                         </Grid>
                       </Grid>

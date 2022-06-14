@@ -16,6 +16,13 @@ window.Highcharts = Highcharts;
 
 const DisplayCharts = (props) => {
         const plantingYear = props.chartWeatherData.dates_for_summary[0].split('-')[0]
+        const fcstIsShowing = props.chartWeatherData.dates_selected_year.includes(props.chartWeatherData.firstFcstDate)
+        const idxOfFirstFcstDate = props.chartWeatherData.dates_selected_year.indexOf(props.chartWeatherData.firstFcstDate)
+        //if (props.chartWeatherData.dates_selected_year.includes(props.chartWeatherData.firstFcstDate)) {
+        //    const idxOfFirstFcstDate = props.chartWeatherData.dates_selected_year.indexOf(props.chartWeatherData.firstFcstDate)
+        //} else {
+        //    const idxOfFirstFcstDate = null
+        //}
 
         // function to count item in array
         const countItemInArray = (item,arr) => {
@@ -188,7 +195,7 @@ const DisplayCharts = (props) => {
                  ],
                  series: [{
                      name: "Season to Date",
-                     data: props.chartWeatherData.gdd_ytd_selected.map((item,index) => {
+                     data: props.chartWeatherData.gdd_ytd_selected.slice(0,idxOfFirstFcstDate).map((item,index) => {
                        let date_item = moment.utc(props.chartWeatherData.dates_selected_year[index],"YYYY-MM-DD").valueOf()
                        return [date_item,item]
                      }),
@@ -196,7 +203,11 @@ const DisplayCharts = (props) => {
                      marker: { enabled: true, fillColor: "#00dd00", lineWidth: 2, lineColor: "#00dd00", radius:2, symbol:"circle" }
                    },{
                      name: "6 Day Forecast",
-                     data: [],
+                     data: props.chartWeatherData.gdd_ytd_selected.slice(idxOfFirstFcstDate).map((item,index) => {
+                       let date_item = moment.utc(props.chartWeatherData.dates_selected_year[idxOfFirstFcstDate+index],"YYYY-MM-DD").valueOf()
+                       return [date_item,item]
+                     }),
+                     showInLegend: fcstIsShowing,
                      type: "line", zIndex: 24, lineWidth: 2, color: "#dd0000", shadow: false,
                      marker: { enabled: true, fillColor: "#dd0000", lineWidth: 2, lineColor: "#dd0000", radius:2, symbol:"circle" }
                    },{
