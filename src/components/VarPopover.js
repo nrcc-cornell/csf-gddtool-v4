@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import Popover from '@material-ui/core/Popover';
 
 const styles = theme => ({
@@ -61,7 +62,9 @@ class VarPopover extends React.Component {
             horizontal: 'left',
           }}
         >
-          {this.props.content}
+          <Box paddingTop={1} border={2} borderRadius={4} borderColor="primary.main">
+            {this.props.content}
+          </Box>
         </Popover>
       </div>
     );

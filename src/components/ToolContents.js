@@ -21,6 +21,7 @@ import moment from 'moment';
 import ls from 'local-storage';
 
 // Components
+import LocationPicker from './LocationPicker/LocationPicker'
 import LoadPointData from './LoadPointData';
 import LoadPointDataFcst from './LoadPointDataFcst';
 import DisplayChart from './DisplayChart';
@@ -35,6 +36,33 @@ class ToolContents extends Component {
 
     constructor(props) {
         super(props);
+        //this.toolName = 'TEST';
+        this.toolName = 'CSF-GDDTOOL';
+        this.token = 'pk.eyJ1IjoiYm5iMiIsImEiOiJjazJtYTgwajQwZnFiM29waGo4NHI1MWpnIn0.Xmb6eYeJArqqBQtKkWorUQ';
+        this.bbox = {
+          north: 47.53,
+          south: 37.09,
+          east: -66.89,
+          west: -82.7542
+        };
+        // Limits locations to be within this list of states
+        this.allowedStates = [
+          'Maine',
+          'New Hampshire',
+          'Vermont',
+          'Rhode Island',
+          'Massachusetts',
+          'Connecticut',
+          'New York',
+          'New Jersey',
+          'Pennsylvania',
+          'Delaware',
+          'Maryland',
+          'West Virginia',
+          'Ohio',
+          'Virginia',
+          'Kentucky'
+        ];
         this.gdd_list = ['86/50','50','49','48','47','46','45','44','43','42','41','40',
           '39','38','37','36','35','34','33','32']
         this.defaultLocation = {
@@ -51,8 +79,8 @@ class ToolContents extends Component {
           'default':this.defaultLocation
         }
         this.state = {
-          locations: ls('CSF-GDDTOOL.locations') || this.defaultLocations,
-          selected: ls('CSF-GDDTOOL.selected') || this.defaultLocation['id'],
+          locations: ls(this.toolName+'.locations') || this.defaultLocations,
+          selected: ls(this.toolName+'.selected') || this.defaultLocation['id'],
           pointData: null,
           dataIsLoading: false,
           targetIsEnabled: false,
@@ -64,7 +92,7 @@ class ToolContents extends Component {
 
     componentDidMount() {
         // Find all data for a given location
-        if (this.state.locations && this.state.selected) {
+        if ((this.state.locations && this.state.selected)) {
           this.loadAllData()
         }
     }
@@ -73,8 +101,8 @@ class ToolContents extends Component {
         if (prevState.selected!==this.state.selected) {
           this.loadAllData()
         }
-        if (prevState.locations!==this.state.locations) { ls.set('CSF-GDDTOOL.locations',this.state.locations) }
-        if (prevState.selected!==this.state.selected) { ls.set('CSF-GDDTOOL.selected',this.state.selected) }
+        if (prevState.locations!==this.state.locations) { ls.set(this.toolName+'.locations',this.state.locations) }
+        if (prevState.selected!==this.state.selected) { ls.set(this.toolName+'.selected',this.state.selected) }
     }
 
     addOneDayToStringDate = (d) => {
@@ -179,7 +207,8 @@ class ToolContents extends Component {
         }) )
     }
 
-    handleLocationPickerOutput = (l,s) => {
+    //handleLocationPickerOutput = (l,s) => {
+    handleLocationPickerOutput = (s,l) => {
         // include additional items for each location (items like gdd_base, gdd_target, freeze_threshold, planting_date)
         let l_new = {}
         for (let k in l) {
@@ -193,7 +222,8 @@ class ToolContents extends Component {
         }
         this.setState({
           locations: l_new,
-          selected: s['id']
+          //selected: s['id']
+          selected: s
         })
     }
 
@@ -237,7 +267,6 @@ class ToolContents extends Component {
 
         let display_DisplayChart;
         let display_UserInput;
-        let display_VarPopover;
         if (this.state.pointData) {
             display_DisplayChart = <DisplayChart
                         locInfo={this.state.locations[this.state.selected]}
@@ -262,6 +291,7 @@ class ToolContents extends Component {
                                   targetIsEnabled={this.state.targetIsEnabled}
                                   freezeIsEnabled={this.state.freezeIsEnabled}
                                   gdd_list={this.gdd_list}
+                                  mapbox_token={this.token}
                                   onchange_locationPicker={this.handleLocationPickerOutput}
                                   onchange_view={this.handleViewChange}
                                   onchange_plantingDate={this.handlePlantingDateChange}
@@ -270,17 +300,30 @@ class ToolContents extends Component {
                                   onchange_freezeIsEnabled={this.handleFreezeIsEnabledChange}
                                 />
 
-        display_VarPopover = <VarPopover content={display_UserInput} />;
-
         return (
             <>
 
-                <Grid container direction="row" justify="stretch" spacing={0}>
+              <Grid container direction="column" justify="center" spacing={2}>
 
-                  <Grid item container direction="column" justify="top" alignItems="center" spacing={1} md>
+                <Grid item>
+                  <LocationPicker
+                    locations={this.state.locations}
+                    selected={this.state.selected}
+                    newLocationsCallback={this.handleLocationPickerOutput}
+                    token={this.token}
+                    modalZIndex={150}
+                  />
+                </Grid>
+
+                <Grid item>
+                </Grid>
+
+                <Grid container direction="row" justify="stretch">
+
+                  <Grid item container direction="column" justify="top" spacing={1} md>
                     <Hidden mdUp>
                         <Grid item>
-                          {display_VarPopover}
+                          <VarPopover content={display_UserInput} />
                         </Grid>
                     </Hidden>
                     <Hidden smDown>
@@ -326,9 +369,8 @@ class ToolContents extends Component {
 
                 </Grid>
 
+              </Grid>
 
-                <div className="csftool-location-dialog">
-                </div>
             </>
         );
     }
