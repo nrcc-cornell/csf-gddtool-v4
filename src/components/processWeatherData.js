@@ -15,6 +15,7 @@ function shiftDataBackOneDay(data) {
     let dataShifted = data.map(item => [subtractOneDayFromDateString(item[0]),item[1],item[2]])
     // only return data starting with expected first date
     return dataShifted.slice(1)
+    //return dataShifted
 }
 
 function calcGddAcc(data,plantingDate,gddBase) {
@@ -32,13 +33,14 @@ function calcGddAcc(data,plantingDate,gddBase) {
         return Math.max(...[((mx+mn)/2.) - b, 0])
     }
 
-    //let startDateMMDD = plantingDate.slice(0,2)+'-'+plantingDate.slice(3,5);
-    let zeroDateMMDD = moment(plantingDate,'MM/DD/YYYY').subtract(1,'day').format('MM-DD')
+    let startDateMMDD = plantingDate.slice(0,2)+'-'+plantingDate.slice(3,5);
+    //let zeroDateMMDD = moment(plantingDate,'MM/DD/YYYY').subtract(1,'day').format('MM-DD')
     let base = (gddBase==='86/50') ? 50 : gddBase
     let limits = (gddBase==='86/50') ? [86,50] : null
     let dataAccSincePlantingDate = data.map((sum = 0, item =>
+      [item[0], item[0].slice(5)===startDateMMDD ? sum = calcGdd(item[1],item[2],base,limits) : sum += calcGdd(item[1],item[2],base,limits)]
       //[item[0], item[0].slice(5)===startDateMMDD ? sum = 0 : sum += calcGdd(item[1],item[2],base,limits)]
-      [item[0], item[0].slice(5)===zeroDateMMDD ? sum = 0 : sum += calcGdd(item[1],item[2],base,limits)]
+      //[item[0], item[0].slice(5)===zeroDateMMDD ? sum = 0 : sum += calcGdd(item[1],item[2],base,limits)]
     ))
     return dataAccSincePlantingDate
 }
@@ -60,7 +62,9 @@ function getSelectedYearData(data,plantingDate) {
     }
     dataFiltered = data.filter(isWithinThisYear);
     dates_selected_year = dataFiltered.map(x => x[0]);
-    gdd_ytd_selected = dataFiltered.map(x => x[1]!==miss ? x[1] : null);
+    gdd_ytd_selected = dataFiltered.map(x => (x[1]!==miss ? x[1] : null));
+    //console.log(dates_selected_year)
+    //console.log(gdd_ytd_selected)
 
     return {
         'dates_selected_year': dates_selected_year,
@@ -229,20 +233,6 @@ export function processWeatherData(dataDailyExtremes,lastObsDate,plantingDate,gd
      }
 
     return results
-    //return {
-    //    'dates_selected_year':,
-    //    'gdd_ytd_selected':,
-    //    'gdd_ytd_15yr_ave':,
-    //    'gdd_ytd_30yr_nor':,
-    //    'gdd_ytd_por_max':,
-    //    'gdd_ytd_por_min':,
-    //    'datesOfLastFreeze_15yr':,
-    //    'datesOfFirstFreeze_15yr':,
-    //    'firstFcstDate':,
-    //    'gdd_fcst_15yr_max':,
-    //    'gdd_fcst_15yr_min':,
-    //    'gdd_fcst_15yr_ave':,
-    //};
 
 }
 

@@ -15,14 +15,15 @@ ExportData(Highcharts)
 window.Highcharts = Highcharts;
 
 const DisplayCharts = (props) => {
+        const currentYear = moment().format('YYYY')
         const plantingYear = props.chartWeatherData.dates_for_summary[0].split('-')[0]
         const fcstIsShowing = props.chartWeatherData.dates_selected_year.includes(props.chartWeatherData.firstFcstDate)
-        const idxOfFirstFcstDate = props.chartWeatherData.dates_selected_year.indexOf(props.chartWeatherData.firstFcstDate)
-        //if (props.chartWeatherData.dates_selected_year.includes(props.chartWeatherData.firstFcstDate)) {
-        //    const idxOfFirstFcstDate = props.chartWeatherData.dates_selected_year.indexOf(props.chartWeatherData.firstFcstDate)
-        //} else {
-        //    const idxOfFirstFcstDate = null
-        //}
+        let idxOfFirstFcstDate
+        if (plantingYear===currentYear) {
+            idxOfFirstFcstDate = props.chartWeatherData.dates_selected_year.indexOf(props.chartWeatherData.firstFcstDate)
+        } else {
+            idxOfFirstFcstDate = props.chartWeatherData.dates_selected_year.length
+        }
 
         // function to count item in array
         const countItemInArray = (item,arr) => {

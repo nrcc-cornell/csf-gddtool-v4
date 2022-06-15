@@ -64,7 +64,7 @@ class ToolContents extends Component {
 
     componentDidMount() {
         // Find all data for a given location
-        if ((this.state.locations && this.state.selected)) {
+        if (this.state.locations && this.state.selected) {
           this.loadAllData()
         }
     }
@@ -94,6 +94,7 @@ class ToolContents extends Component {
 
                 //handle observed data
                 let data_obs = response_obs['data']
+                data_obs = data_obs.filter(item => item[1] !== -999 && item[2] !== -999)
                 let last_obs_date = data_obs.slice(-1)[0][0]
 
                 LoadPointDataFcst({param:this.getAcisParamsFcst(last_obs_date)})
