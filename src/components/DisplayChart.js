@@ -59,10 +59,10 @@ const DisplayCharts = (props) => {
                 item = this.points[i];
                 //if ( (item.series.name !== "POR Max") && (item.series.name !== "POR Min") && (item.series.name !== "POR") ) {
                 if ( item.series.name !== "Period of Record" ) {
-                    tips += '<br/>' + item.y.toFixed(0) + ' : <span style="color:'+item.color+';font-size:12px;font-weight:bold">' +  item.series.name + '</span>';
+                    tips += '<br/>' + item.y.toFixed(0) + ' : <span style="color:'+item.color+';font-weight:bold">' +  item.series.name + '</span>';
                 }
                 if (item.series.name === "Period of Record") {
-                    tips += '<br/>' + item.point.low.toFixed(0) + '-' + item.point.high.toFixed(0) + ' : <span font-size:12px;">Period of Record</span>';
+                    tips += '<br/>' + item.point.low.toFixed(0) + '-' + item.point.high.toFixed(0) + ' : <span>Period of Record</span>';
                 }
             }
             return header + tips;

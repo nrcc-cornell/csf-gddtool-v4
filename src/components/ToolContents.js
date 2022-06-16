@@ -209,12 +209,15 @@ class ToolContents extends Component {
 
     //handleLocationPickerOutput = (l,s) => {
     handleLocationPickerOutput = (s,l) => {
+        console.log(s)
+        console.log(l)
         // include additional items for each location (items like gdd_base, gdd_target, freeze_threshold, planting_date)
         let l_new = {}
         for (let k in l) {
           if (l.hasOwnProperty(k)) {
             if (this.state.locations.hasOwnProperty(k)) {
-              l_new[k] = { ...this.defaultLocation, ...this.state.locations[k], ...l[k] }
+              //l_new[k] = { ...this.defaultLocation, ...this.state.locations[k], ...l[k] }
+              l_new[k] = { ...this.defaultLocation, ...l[k], ...this.state.locations[k] }
             } else {
               l_new[k] = { ...this.defaultLocation, ...l[k] }
             }
@@ -318,9 +321,9 @@ class ToolContents extends Component {
                 <Grid item>
                 </Grid>
 
-                <Grid container direction="row" justify="stretch">
+                <Grid container direction="row" justify="center">
 
-                  <Grid item container direction="column" justify="top" spacing={1} md>
+                  <Grid item container direction="column" justify="flex-start" spacing={1} md>
                     <Hidden mdUp>
                         <Grid item>
                           <VarPopover content={display_UserInput} />

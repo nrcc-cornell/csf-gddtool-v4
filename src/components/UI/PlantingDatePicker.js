@@ -34,7 +34,7 @@ const PlantingDatePicker = (props) => {
               minDate="01/01/1980"
               maxDate="12/31/2022"
               PopoverProps={{style: {...{left: '180px', top: '-140px'}}}}
-              margin="normal"
+              margin="none"
               id="date-picker-inline"
               label="Planting Date"
               value={props.value}

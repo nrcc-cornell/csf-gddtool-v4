@@ -38,7 +38,7 @@ const GddBaseSelect = (props) => {
               <Select
                 value={props.value}
                 onChange={props.onchange}
-                margin='normal'
+                margin='none'
                 MenuProps={{ classes: { paper: classes.menuPaper } }}
                 inputProps={{
                   name: 'gdd_base',
