@@ -38,31 +38,7 @@ class ToolContents extends Component {
         super(props);
         //this.toolName = 'TEST';
         this.toolName = 'CSF-GDDTOOL';
-        this.token = 'pk.eyJ1IjoiYm5iMiIsImEiOiJjazJtYTgwajQwZnFiM29waGo4NHI1MWpnIn0.Xmb6eYeJArqqBQtKkWorUQ';
-        this.bbox = {
-          north: 47.53,
-          south: 37.09,
-          east: -66.89,
-          west: -82.7542
-        };
-        // Limits locations to be within this list of states
-        this.allowedStates = [
-          'Maine',
-          'New Hampshire',
-          'Vermont',
-          'Rhode Island',
-          'Massachusetts',
-          'Connecticut',
-          'New York',
-          'New Jersey',
-          'Pennsylvania',
-          'Delaware',
-          'Maryland',
-          'West Virginia',
-          'Ohio',
-          'Virginia',
-          'Kentucky'
-        ];
+        this.token = 'YOUR_TOKEN';
         this.gdd_list = ['86/50','50','49','48','47','46','45','44','43','42','41','40',
           '39','38','37','36','35','34','33','32']
         this.defaultLocation = {
@@ -294,7 +270,6 @@ class ToolContents extends Component {
                                   targetIsEnabled={this.state.targetIsEnabled}
                                   freezeIsEnabled={this.state.freezeIsEnabled}
                                   gdd_list={this.gdd_list}
-                                  mapbox_token={this.token}
                                   onchange_locationPicker={this.handleLocationPickerOutput}
                                   onchange_view={this.handleViewChange}
                                   onchange_plantingDate={this.handlePlantingDateChange}

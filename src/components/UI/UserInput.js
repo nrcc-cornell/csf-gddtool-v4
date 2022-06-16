@@ -11,8 +11,6 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 
 // Components
-//import LocationPicker from './LocationPicker';
-//import LocationPicker from './LocationPicker/LocationPicker'
 import PlantingDatePicker from './PlantingDatePicker';
 import GddBaseSelect from './GddBaseSelect';
 import GddTargetSelect from './GddTargetSelect';
@@ -20,22 +18,9 @@ import GddTargetSelectEnable from './GddTargetSelectEnable';
 import FreezeThreshSelect from './FreezeThreshSelect';
 import FreezeThreshSelectEnable from './FreezeThreshSelectEnable';
 
-//import StationPickerMap from '../../common/StationPickerMap';
-//import VarPicker from '../VarPicker';
-//import ScenarioPicker from '../ScenarioPicker';
-//import TimescalePicker from '../TimescalePicker';
-//import PeriodPicker from '../PeriodPicker';
-//import HelpUserPopover from '../HelpUserPopover';
-//import HelpUserContent from '../HelpUserContent';
-
-
 class UserInput extends React.Component {
-  //constructor(props) {
-  //    super(props);
-  //}
 
   render() {
-    //const { classes } = this.props;
 
     return (
       <Box padding={2} border={0} borderRadius={4} borderColor="primary.main">
@@ -98,7 +83,6 @@ UserInput.propTypes = {
   targetIsEnabled: PropTypes.bool.isRequired,
   freezeIsEnabled: PropTypes.bool.isRequired,
   gdd_list: PropTypes.array.isRequired,
-  //mapbox_token: PropTypes.string.isRequired,
   onchange_locationPicker: PropTypes.func.isRequired,
   onchange_view: PropTypes.func.isRequired,
   onchange_plantingDate: PropTypes.func.isRequired,
