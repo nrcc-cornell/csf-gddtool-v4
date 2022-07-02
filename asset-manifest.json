@@ -5,6 +5,7 @@
     "main.js.map": "/csf-gddtool-v4/js/toolinit.js.map",
     "index.html": "/csf-gddtool-v4/index.html",
     "js/toolinit.js.LICENSE.txt": "/csf-gddtool-v4/js/toolinit.js.LICENSE.txt",
+    "static/media/LocationPicker.css": "/csf-gddtool-v4/static/media/pin-red.8ec75972.svg",
     "style/csf-gddtool-v4.css.map": "/csf-gddtool-v4/style/csf-gddtool-v4.css.map"
   },
   "entrypoints": [
