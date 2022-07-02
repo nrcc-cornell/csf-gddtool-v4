@@ -50,7 +50,7 @@ class App extends Component {
 
         return (
             <MuiThemeProvider theme={theme}>
-              <div id="container" className="App">
+              <div className="App">
                   <ToolContents />
               </div>
             </MuiThemeProvider>

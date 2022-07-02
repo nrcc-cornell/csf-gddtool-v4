@@ -312,7 +312,7 @@ class ToolContents extends Component {
                   </Grid>
 
                   <Grid item container direction="column" justify="center" alignItems="center" spacing={1} md={9}>
-                      <Grid item style={{width:'100%', height:'70vh'}}>
+                      <Grid item style={{width:'100%'}}>
                         {this.state.pointData && display_DisplayChart}
                       </Grid>
                       <Grid item container direction="row" justify="center" alignItems="center" spacing={1}>
