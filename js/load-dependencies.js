@@ -7,7 +7,8 @@ function loadToolDependencies() {
     dependency = document.createElement('link');
     dependency.setAttribute("rel","stylesheet");
     dependency.setAttribute("type","text/css");
-    dependency.setAttribute("href", CSFTOOL_URL + "/style/csf-gddtool-v4.css?v=3.0.2");
+    dependency.setAttribute("href", CSFTOOL_URL + "/style/csf-gddtool-v4.css?v=4.0.0");
     element.appendChild(dependency);
 
 }
+loadToolDependencies();

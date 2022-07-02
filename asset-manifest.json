@@ -1,24 +1,14 @@
 {
   "files": {
-    "main.css": "/csf-gddtool-v4/static/css/main.86409b2e.chunk.css",
-    "main.js": "/csf-gddtool-v4/static/js/main.9fac762e.chunk.js",
-    "main.js.map": "/csf-gddtool-v4/static/js/main.9fac762e.chunk.js.map",
-    "runtime-main.js": "/csf-gddtool-v4/static/js/runtime-main.a9c26616.js",
-    "runtime-main.js.map": "/csf-gddtool-v4/static/js/runtime-main.a9c26616.js.map",
-    "static/css/2.7651ca2a.chunk.css": "/csf-gddtool-v4/static/css/2.7651ca2a.chunk.css",
-    "static/js/2.cee5dae4.chunk.js": "/csf-gddtool-v4/static/js/2.cee5dae4.chunk.js",
-    "static/js/2.cee5dae4.chunk.js.map": "/csf-gddtool-v4/static/js/2.cee5dae4.chunk.js.map",
+    "main.css": "/csf-gddtool-v4/style/csf-gddtool-v4.css",
+    "main.js": "/csf-gddtool-v4/js/toolinit.js",
+    "main.js.map": "/csf-gddtool-v4/js/toolinit.js.map",
     "index.html": "/csf-gddtool-v4/index.html",
-    "static/css/2.7651ca2a.chunk.css.map": "/csf-gddtool-v4/static/css/2.7651ca2a.chunk.css.map",
-    "static/css/main.86409b2e.chunk.css.map": "/csf-gddtool-v4/static/css/main.86409b2e.chunk.css.map",
-    "static/js/2.cee5dae4.chunk.js.LICENSE.txt": "/csf-gddtool-v4/static/js/2.cee5dae4.chunk.js.LICENSE.txt",
-    "static/media/LocationPicker.css": "/csf-gddtool-v4/static/media/pin-red.8ec75972.svg"
+    "js/toolinit.js.LICENSE.txt": "/csf-gddtool-v4/js/toolinit.js.LICENSE.txt",
+    "style/csf-gddtool-v4.css.map": "/csf-gddtool-v4/style/csf-gddtool-v4.css.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.a9c26616.js",
-    "static/css/2.7651ca2a.chunk.css",
-    "static/js/2.cee5dae4.chunk.js",
-    "static/css/main.86409b2e.chunk.css",
-    "static/js/main.9fac762e.chunk.js"
+    "style/csf-gddtool-v4.css",
+    "js/toolinit.js"
   ]
 }
