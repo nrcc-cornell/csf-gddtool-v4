@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import mapboxgl from 'mapbox-gl';
@@ -216,3 +217,13 @@ export default function MapComp(props) {
     </div>
   );
 }
+
+MapComp.propTypes = {
+  allowedStates: PropTypes.array,
+  bbox: PropTypes.object,
+  token: PropTypes.string,
+  handleChangeLocations: PropTypes.func,
+  currentLocation: PropTypes.object,
+  pastLocations: PropTypes.object,
+  mapRef: PropTypes.object
+};

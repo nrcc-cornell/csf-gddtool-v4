@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import './LocationPicker.css'
 
 import Map from './Map';
@@ -33,6 +34,12 @@ export default function LocationPicker(props) {
 
   const mapRef = useRef(null);
 
+  // Handles ensuring state sync if no initial location is provided
+  useEffect(() => {
+    if (props.selected === '') {
+      props.newLocationsCallback(defaultId, defaultLocation);
+    }
+  }, []);
 
   // Handles moving the modal div to allow and disable clicking on the main page
   useEffect(() => {
@@ -80,7 +87,7 @@ export default function LocationPicker(props) {
   return (
     <div id='loc-container' style={{ zIndex: props.modalZIndex || 100}}>
       <div id='loc-location-text'>{pastLocations[currentId].address}</div>
-      <div id='loc-location-change' onClick={() => setModalOpen(true)}>Change Location</div>
+      <div id='loc-location-change' onClick={() => setModalOpen(true)}><button>Change Location</button></div>
     
       <div
         id='loc-modal-container'
@@ -114,3 +121,13 @@ export default function LocationPicker(props) {
     </div>
   );
 }
+
+LocationPicker.propTypes = {
+  allowedStates: PropTypes.array,
+  bbox: PropTypes.object,
+  token: PropTypes.string,
+  modalZIndex: PropTypes.number,
+  newLocationsCallback: PropTypes.func,
+  selected: PropTypes.string,
+  locations: PropTypes.object
+};

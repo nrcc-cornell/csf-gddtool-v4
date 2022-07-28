@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 
 
@@ -69,7 +70,16 @@ export default function MapBar( props ) {
         onClick={handleSearch}
       >Search</button>
 
-      <div id='loc-modal-close' onClick={props.handleClose}>X</div>
+      <div id='loc-modal-close' onClick={props.handleClose}><div id='loc-modal-close-x'>X</div></div>
     </div>
   );
 }
+
+MapBar.propTypes = {
+  token: PropTypes.string,
+  allowedStates: PropTypes.array,
+  bbox: PropTypes.object,
+  mapRef: PropTypes.object,
+  handleChangeLocations: PropTypes.func,
+  handleClose: PropTypes.func
+};

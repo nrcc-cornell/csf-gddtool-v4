@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Marker } from 'react-map-gl';
 
 
@@ -28,3 +29,12 @@ export default function Markers(props) {
     })}
   </>;
 }
+
+Markers.propTypes = {
+  currentLocation: PropTypes.object,
+  pastLocations: PropTypes.object,
+  onMarkerMouseEnter: PropTypes.func,
+  onMarkerMouseLeave: PropTypes.func,
+  onMarkerClick: PropTypes.func,
+  onMarkerRightClick: PropTypes.func
+};

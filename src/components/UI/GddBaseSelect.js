@@ -16,7 +16,7 @@ const styles = theme => ({
     flexWrap: 'wrap',
   },
   formControl: {
-    minWidth: 160,
+    minWidth: 180,
   },
   menuPaper: {
     maxHeight: 190,

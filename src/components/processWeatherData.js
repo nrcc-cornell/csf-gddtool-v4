@@ -122,15 +122,24 @@ function getExtremesAndAverageData(data,plantingDate) {
     }
 }
 
-function getFreezeData(data,plantingDate,freezeThreshold) {
+function getFreezeData(data,plantingDate,freezeThreshold,limitYears) {
     //
     //
 
+    if (limitYears===undefined) {
+      limitYears = null
+    }
+
     if (!freezeThreshold) {
-      return {
-        'datesOfFirstFreeze_15yr':[],
-        'datesOfLastFreeze_15yr':[],
+      let res = {}
+      if (limitYears) {
+              res['datesOfFirstFreeze_'+limitYears.toString()+'yr'] = []
+              res['datesOfLastFreeze_'+limitYears.toString()+'yr'] = []
+      } else {
+              res['datesOfFirstFreeze'] = []
+              res['datesOfLastFreeze'] = []
       }
+      return res
     }
 
     //var plantingDateFormatted = plantingDate.slice(6,10)+'-'+plantingDate.slice(0,2)+'-'+plantingDate.slice(3,5);
@@ -138,13 +147,21 @@ function getFreezeData(data,plantingDate,freezeThreshold) {
     var currentYear = moment().format('YYYY')
     let years = []
     let seasonStartDates
-    let datesOfFirstFreeze_15yr = []
-    let datesOfLastFreeze_15yr = []
+    let datesOfFirstFreeze = []
+    let datesOfLastFreeze = []
 
     let dates = data.map(x => x[0])
 
-    // find last 15 years before current year
-    for (let i = 1; i < 16; i++) {
+    // number of years to include in freeze data
+    let numYears
+    if (limitYears) {
+      numYears = limitYears
+    } else {
+      numYears = parseInt(currentYear,10) - parseInt(dates[0].slice(0,4),10)
+    }
+
+    // find last years in period of interest
+    for (let i = 1; i < numYears+1; i++) {
       years.push(parseInt(currentYear,10)-i)
     }
 
@@ -165,33 +182,38 @@ function getFreezeData(data,plantingDate,freezeThreshold) {
       // get last freeze in Spring
       springFreezes = data.slice(idxOfDate-180,idxOfDate).filter(isBelowFreezeThreshold)
       if (springFreezes.length>0) {
-          datesOfLastFreeze_15yr.push(springFreezes.slice(-1)[0][0])
+          datesOfLastFreeze.push(springFreezes.slice(-1)[0][0])
       } else {
-          datesOfLastFreeze_15yr = []
+          datesOfLastFreeze = []
       }
       // get first freeze in Fall
       fallFreezes = data.slice(idxOfDate,idxOfDate+180).filter(isBelowFreezeThreshold)
       if (fallFreezes.length>0) {
-          datesOfFirstFreeze_15yr.push(fallFreezes[0][0])
+          datesOfFirstFreeze.push(fallFreezes[0][0])
       } else {
-          datesOfFirstFreeze_15yr = []
+          datesOfFirstFreeze = []
       }
     })
 
     // only include data on or after planting date
 
     // change years to selected year, for highcharts display
-    datesOfFirstFreeze_15yr = datesOfFirstFreeze_15yr.map(x => selectedYear+x.slice(4))
-    datesOfLastFreeze_15yr = datesOfLastFreeze_15yr.map(x => selectedYear+x.slice(4))
+    datesOfFirstFreeze = datesOfFirstFreeze.map(x => selectedYear+x.slice(4))
+    datesOfLastFreeze = datesOfLastFreeze.map(x => selectedYear+x.slice(4))
 
     // highcharts prefers working with sorted data
-    if (datesOfFirstFreeze_15yr.length>0) { datesOfFirstFreeze_15yr.sort() };
-    if (datesOfLastFreeze_15yr.length>0) { datesOfLastFreeze_15yr.sort() };
+    if (datesOfFirstFreeze.length>0) { datesOfFirstFreeze.sort() };
+    if (datesOfLastFreeze.length>0) { datesOfLastFreeze.sort() };
 
-    return {
-        'datesOfFirstFreeze_15yr':datesOfFirstFreeze_15yr,
-        'datesOfLastFreeze_15yr':datesOfLastFreeze_15yr,
+    let res = {}
+    if (limitYears) {
+            res['datesOfFirstFreeze_'+limitYears.toString()+'yr'] = datesOfFirstFreeze
+            res['datesOfLastFreeze_'+limitYears.toString()+'yr'] = datesOfLastFreeze
+    } else {
+            res['datesOfFirstFreeze'] = datesOfFirstFreeze
+            res['datesOfLastFreeze'] = datesOfLastFreeze
     }
+    return res
 }
 
 function getFirstFcstDate(lastObsDate) {
@@ -228,6 +250,7 @@ export function processWeatherData(dataDailyExtremes,lastObsDate,plantingDate,gd
         ...results,
         ...getSelectedYearData(data,plantingDate),
         ...getExtremesAndAverageData(data,plantingDate),
+        ...getFreezeData(dataDailyExtremes,plantingDate,freezeThreshold,15),
         ...getFreezeData(dataDailyExtremes,plantingDate,freezeThreshold),
         ...getFirstFcstDate(lastObsDate),
      }

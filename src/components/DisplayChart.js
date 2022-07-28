@@ -36,19 +36,37 @@ const DisplayCharts = (props) => {
             return count
         }
 
-        // data for first freeze
-        let dataForFirstFreeze = [];
+        // data for first freeze (last 15 years)
+        let dataForFirstFreeze_15yr = [];
         let i, countOfThisDate;
         for (i=0; i<props.chartWeatherData.datesOfFirstFreeze_15yr.length; i++) {
             countOfThisDate = countItemInArray(props.chartWeatherData.datesOfFirstFreeze_15yr[i],props.chartWeatherData.datesOfFirstFreeze_15yr)
-            dataForFirstFreeze.push( {x: moment.utc(props.chartWeatherData.datesOfFirstFreeze_15yr[i],'YYYY-MM-DD').valueOf(), y: countOfThisDate, color: 'rgb(0,0,255)'} )
+            //dataForFirstFreeze_15yr.push( {x: moment.utc(props.chartWeatherData.datesOfFirstFreeze_15yr[i],'YYYY-MM-DD').valueOf(), y: countOfThisDate, color: 'rgb(255,140,0)'} )
+            dataForFirstFreeze_15yr.push( {x: moment.utc(props.chartWeatherData.datesOfFirstFreeze_15yr[i],'YYYY-MM-DD').valueOf(), y: countOfThisDate} )
         }
 
-        // data for last freeze
-        let dataForLastFreeze = [];
+        // data for last freeze (last 15 years)
+        let dataForLastFreeze_15yr = [];
         for (i=0; i<props.chartWeatherData.datesOfLastFreeze_15yr.length; i++) {
             countOfThisDate = countItemInArray(props.chartWeatherData.datesOfLastFreeze_15yr[i],props.chartWeatherData.datesOfLastFreeze_15yr)
-            dataForLastFreeze.push( {x: moment.utc(props.chartWeatherData.datesOfLastFreeze_15yr[i],'YYYY-MM-DD').valueOf(), y: countOfThisDate, color: 'rgb(0,0,255)'} )
+            //dataForLastFreeze_15yr.push( {x: moment.utc(props.chartWeatherData.datesOfLastFreeze_15yr[i],'YYYY-MM-DD').valueOf(), y: countOfThisDate, color: 'rgb(255,140,0)'} )
+            dataForLastFreeze_15yr.push( {x: moment.utc(props.chartWeatherData.datesOfLastFreeze_15yr[i],'YYYY-MM-DD').valueOf(), y: countOfThisDate} )
+        }
+
+        // data for first freeze (all years)
+        let dataForFirstFreeze = [];
+        for (i=0; i<props.chartWeatherData.datesOfFirstFreeze.length; i++) {
+            countOfThisDate = countItemInArray(props.chartWeatherData.datesOfFirstFreeze[i],props.chartWeatherData.datesOfFirstFreeze)
+            //dataForFirstFreeze.push( {x: moment.utc(props.chartWeatherData.datesOfFirstFreeze[i],'YYYY-MM-DD').valueOf(), y: countOfThisDate, color: 'rgb(0,0,255)'} )
+            dataForFirstFreeze.push( {x: moment.utc(props.chartWeatherData.datesOfFirstFreeze[i],'YYYY-MM-DD').valueOf(), y: countOfThisDate} )
+        }
+
+        // data for last freeze (all years)
+        let dataForLastFreeze = [];
+        for (i=0; i<props.chartWeatherData.datesOfLastFreeze.length; i++) {
+            countOfThisDate = countItemInArray(props.chartWeatherData.datesOfLastFreeze[i],props.chartWeatherData.datesOfLastFreeze)
+            //dataForLastFreeze.push( {x: moment.utc(props.chartWeatherData.datesOfLastFreeze[i],'YYYY-MM-DD').valueOf(), y: countOfThisDate, color: 'rgb(0,0,255)'} )
+            dataForLastFreeze.push( {x: moment.utc(props.chartWeatherData.datesOfLastFreeze[i],'YYYY-MM-DD').valueOf(), y: countOfThisDate} )
         }
 
         function tooltipFormatter() {
@@ -119,6 +137,7 @@ const DisplayCharts = (props) => {
                      series: {
                          type: 'line',
                          animation: false,
+                         grouping: false,
                          lineWidth: 4,
                          marker: {
                              symbol: 'circle',
@@ -233,14 +252,28 @@ const DisplayCharts = (props) => {
                        let date_item = moment.utc(props.chartWeatherData.dates_for_summary[index],"YYYY-MM-DD").valueOf()
                        return [date_item,props.chartWeatherData.gdd_ytd_por_min[index], props.chartWeatherData.gdd_ytd_por_max[index]]
                      }),
-                     type: "arearange", showInLegend: true, zIndex: 10, lineWidth: 2, color: "#444444", fillColor: "#eeeeee", fillOpacity: 0.1,
-                     marker : {enabled: false, states: { hover: { enabled: false }}, symbol: 'square', lineWidth: 2, lineColor: '#444444', radius: 12 }
+                     type: "arearange", showInLegend: true, zIndex: 10, lineWidth: 2, color: "#a9a9a9", fillColor: "#eeeeee", fillOpacity: 0.1,
+                     marker : {enabled: false, states: { hover: { enabled: false }}, symbol: 'square', lineWidth: 2, lineColor: '#a9a9a9', radius: 12 }
+                     //type: "arearange", showInLegend: true, zIndex: 10, lineWidth: 2, color: "#444444", fillColor: "#eeeeee", fillOpacity: 0.1,
+                     //marker : {enabled: false, states: { hover: { enabled: false }}, symbol: 'square', lineWidth: 2, lineColor: '#444444', radius: 12 }
                    },{
                      name: 'First/Last Freezes (last 15 yrs)', type: 'column', pointWidth: 1, borderWidth: 0,
+                     zIndex: props.view==='season-outlook' ? 2 : 26,
+                     visible: props.freezeIsEnabled,
+                     yAxis: 1,
+                     showInLegend: props.freezeIsEnabled,
+                     //color: "#ff8c00",
+                     color: "#00008b",
+                     enableMouseTracking: false,
+                     data: dataForLastFreeze_15yr.concat(dataForFirstFreeze_15yr),
+                   },{
+                     name: 'First/Last Freezes (POR)', type: 'column', pointWidth: 1, borderWidth: 0,
                      zIndex: props.view==='season-outlook' ? 1 : 25,
                      visible: props.freezeIsEnabled,
                      yAxis: 1,
                      showInLegend: props.freezeIsEnabled,
+                     //color: "#0000ff",
+                     color: "#87cefa",
                      enableMouseTracking: false,
                      data: dataForLastFreeze.concat(dataForFirstFreeze),
                    }

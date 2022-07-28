@@ -17,6 +17,7 @@ import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import moment from 'moment';
 import ls from 'local-storage';
 
@@ -38,15 +39,17 @@ class ToolContents extends Component {
         super(props);
         //this.toolName = 'TEST';
         this.toolName = 'CSF-GDDTOOL';
-        this.token = 'YOUR_TOKEN';
+        //this.token = 'YOUR_TOKEN';
+        this.token = 'pk.eyJ1IjoiYm5iMiIsImEiOiJjazJtYTgwajQwZnFiM29waGo4NHI1MWpnIn0.Xmb6eYeJArqqBQtKkWorUQ';
         this.gdd_list = ['86/50','50','49','48','47','46','45','44','43','42','41','40',
           '39','38','37','36','35','34','33','32']
+        this.currentYear = moment().format('YYYY')
         this.defaultLocation = {
           "address":"Cornell University, Ithaca, NY",
           "lat":42.45,
           "lng":-76.48,
           "id":"default",
-          "planting_date":"01/01/2022",
+          "planting_date":"01/01/"+this.currentYear,
           "gdd_base":"50",
           "gdd_target":"1500",
           "freeze_threshold":"32",
@@ -159,7 +162,6 @@ class ToolContents extends Component {
               "lat":this.state.locations[this.state.selected]['lat'],
               "lon":this.state.locations[this.state.selected]['lng'],
               "tzo":-5,
-              //"sdate":"2022061000",
               "sdate":sdate.replaceAll("-","")+"00",
               "edate":"now",
               })
@@ -226,8 +228,10 @@ class ToolContents extends Component {
 
     handlePlantingDateChange = (...e) => {
         // put data in format expected, then pass to handleLocationInfoChange
-        let e_new = { 'target': {'name':'planting_date', 'value':e[1]} }
-        this.handleLocationInfoChange(e_new)
+        if (e[1] && e[1].slice(0,2)<='12') {
+          let e_new = { 'target': {'name':'planting_date', 'value':e[1]} }
+          this.handleLocationInfoChange(e_new)
+        }
     }
 
     handleTargetIsEnabledChange = () => {
@@ -284,13 +288,15 @@ class ToolContents extends Component {
               <Grid container direction="column" justify="center" spacing={2}>
 
                 <Grid item>
-                  <LocationPicker
-                    locations={this.state.locations}
-                    selected={this.state.selected}
-                    newLocationsCallback={this.handleLocationPickerOutput}
-                    token={this.token}
-                    modalZIndex={150}
-                  />
+                  <Typography variant='h6'>
+                    <LocationPicker
+                      locations={this.state.locations}
+                      selected={this.state.selected}
+                      newLocationsCallback={this.handleLocationPickerOutput}
+                      token={this.token}
+                      modalZIndex={150}
+                    />
+                  </Typography>
                 </Grid>
 
                 <Grid item>

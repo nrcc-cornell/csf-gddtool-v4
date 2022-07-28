@@ -11,17 +11,6 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 
-const styles = theme => ({
-  //root: {
-  //  display: 'flex',
-  //  flexWrap: 'wrap',
-  //},
-});
-
-//const getLabel = (v) => {
-//  return v+'°F'
-//}
-
 const PlantingDatePicker = (props) => {
         //const { classes } = props;
         return (
@@ -32,7 +21,7 @@ const PlantingDatePicker = (props) => {
               variant="inline"
               format="MM/dd/yyyy"
               minDate="01/01/1980"
-              maxDate="12/31/2022"
+              minDateMessage="Data unavailable before 1980"
               PopoverProps={{style: {...{left: '180px', top: '-140px'}}}}
               margin="none"
               id="date-picker-inline"
@@ -40,11 +29,11 @@ const PlantingDatePicker = (props) => {
               value={props.value}
               onChange={props.onchange}
               autoOk={true}
-              InputProps={{ readOnly: true }}
+              InputProps={{ readOnly: false }}
               KeyboardButtonProps={{
                 'aria-label': 'change planting date',
               }}
-              style={{ width: 160 }}
+              style={{ width: 180 }}
             />
           </MuiPickersUtilsProvider>
         );
@@ -55,4 +44,4 @@ PlantingDatePicker.propTypes = {
   onchange: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(PlantingDatePicker);
+export default PlantingDatePicker;
