@@ -117,7 +117,8 @@ class ToolContents extends Component {
 
                 locationSummary = {
                   'key':loc['id'],
-                  'address':loc['address'].split(',')[0],
+                  //'address':loc['address'].split(',')[0],
+                  'address':loc['address'],
                   'planting_date':loc['planting_date'],
                   'gdd_base':'gdd_base' in loc ? loc['gdd_base'] : "50",
                   'gdd_obs':'',
