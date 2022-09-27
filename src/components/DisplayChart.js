@@ -15,6 +15,7 @@ ExportData(Highcharts)
 window.Highcharts = Highcharts;
 
 const DisplayCharts = (props) => {
+        console.log(props.chartWeatherData)
         const currentYear = moment().format('YYYY')
         const plantingYear = props.chartWeatherData.dates_for_summary[0].split('-')[0]
         const fcstIsShowing = props.chartWeatherData.dates_selected_year.includes(props.chartWeatherData.firstFcstDate)

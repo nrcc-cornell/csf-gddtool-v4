@@ -26,6 +26,7 @@ import LocationPicker from './LocationPicker/LocationPicker'
 import LoadPointData from './LoadPointData';
 import LoadPointDataFcst from './LoadPointDataFcst';
 import DisplayChart from './DisplayChart';
+import DisplayLocationSummary from './DisplayLocationSummary';
 import UserInput from './UI/UserInput';
 import VarPopover from './VarPopover';
 import {HelpMain} from "./HelpToolContent";
@@ -61,10 +62,13 @@ class ToolContents extends Component {
           locations: ls(this.toolName+'.locations') || this.defaultLocations,
           selected: ls(this.toolName+'.selected') || this.defaultLocation['id'],
           pointData: null,
+          //summaryData: null,
+          summaryData: [],
           dataIsLoading: false,
+          summaryDataIsLoading: false,
           targetIsEnabled: false,
           freezeIsEnabled: false,
-          // view options: 'season-outlook', 'season-to-date', 'climate-change', 'summary'
+          // view options: 'season-outlook', 'season-to-date', 'summary'
           view: 'season-outlook'
         }
     }
@@ -80,6 +84,9 @@ class ToolContents extends Component {
         if (prevState.selected!==this.state.selected) {
           this.loadAllData()
         }
+        if (prevState.view!=='summary' && this.state.view==='summary') {
+          this.loadSummaryData()
+        }
         if (prevState.locations!==this.state.locations) { ls.set(this.toolName+'.locations',this.state.locations) }
         if (prevState.selected!==this.state.selected) { ls.set(this.toolName+'.selected',this.state.selected) }
     }
@@ -92,11 +99,77 @@ class ToolContents extends Component {
       return moment(d,'YYYY-MM-DD').subtract(1,'days').format('YYYY-MM-DD')
     }
 
+    loadSummaryData = () => {
+      this.handleSummaryDataIsLoadingChange(true)
+      let locations = ls.get(this.toolName+'.locations')
+      let result = []
+      let locationSummary = null
+      let gddFcstArray = null
+      let dataProcessed, idxLastObsDate, idxTarget
+      // loop all saved locations, analyze data, and append to result
+      Object.entries(locations).forEach(([k, loc]) => {
+          // only list locations with current year planting dates
+          if (loc['planting_date'].slice(-4)!==this.currentYear) {
+              return;
+          }
+          LoadPointData({param:this.getAcisParamsObs(loc)})
+            .then(response_obs => {
+
+                locationSummary = {
+                  'key':loc['id'],
+                  'address':loc['address'].split(',')[0],
+                  'planting_date':loc['planting_date'],
+                  'gdd_base':'gdd_base' in loc ? loc['gdd_base'] : "50",
+                  'gdd_obs':'',
+                  'gdd_obs_date':'',
+                  'gdd_target':'gdd_target' in loc ? loc['gdd_target'] : "1500",
+                  'gdd_target_fcst_date':''
+                }
+
+                //handle observed data
+                let data_obs = response_obs['data']
+                data_obs = data_obs.filter(item => item[1] !== -999 && item[2] !== -999)
+                let last_obs_date = data_obs.slice(-1)[0][0]
+
+                dataProcessed = processWeatherData(data_obs,
+                    last_obs_date,
+                    loc['planting_date'],
+                    loc['gdd_base'],
+                    loc['freeze_threshold'])
+
+                last_obs_date = dataProcessed['dates_selected_year'].slice(-1)[0]
+                idxLastObsDate = dataProcessed['dates_selected_year'].indexOf(last_obs_date)
+                locationSummary['gdd_obs'] = dataProcessed['gdd_ytd_selected'][idxLastObsDate]
+                locationSummary['gdd_obs_date'] = dataProcessed['dates_selected_year'][idxLastObsDate].slice(5).replace('-','/')
+
+                if (parseInt(locationSummary['gdd_target'],10) > locationSummary['gdd_obs']) {
+                    idxLastObsDate = dataProcessed['dates_for_summary'].indexOf(last_obs_date)
+                    gddFcstArray = dataProcessed['gdd_ytd_15yr_ave'].map(item =>
+                        item + locationSummary['gdd_obs'] - dataProcessed['gdd_ytd_15yr_ave'][idxLastObsDate]
+                    );
+                    idxTarget = gddFcstArray.findIndex(function(value) {
+                        return value >= parseInt(locationSummary['gdd_target'],10);
+                    });
+                    locationSummary['gdd_target_date'] = dataProcessed['dates_for_summary'][idxTarget].slice(5).replace('-','/')
+                } else {
+                    idxTarget = dataProcessed['gdd_ytd_selected'].findIndex(function(value) {
+                        return value >= parseInt(locationSummary['gdd_target'],10);
+                    });
+                    locationSummary['gdd_target_date'] = dataProcessed['dates_selected_year'][idxTarget].slice(5).replace('-','/')
+                }
+
+                result.push(locationSummary)
+                this.handleSummaryDataChange(result)
+                this.handleSummaryDataIsLoadingChange(false)
+            })
+      });
+    }
+
     loadAllData = () => {
           this.handleDataIsLoadingChange(true)
           setTimeout(() => {
 
-            LoadPointData({param:this.getAcisParamsObs()})
+            LoadPointData({param:this.getAcisParamsObs(this.state.locations[this.state.selected])})
               .then(response_obs => {
 
                 //handle observed data
@@ -132,12 +205,14 @@ class ToolContents extends Component {
           );
     }
 
-    getAcisParamsObs = () => {
+    getAcisParamsObs = (l) => {
+          // l : location to get data for
           return {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              "loc":[this.state.locations[this.state.selected]['lng'],this.state.locations[this.state.selected]['lat']].join(),
+              //"loc":[this.state.locations[this.state.selected]['lng'],this.state.locations[this.state.selected]['lat']].join(),
+              "loc":[l['lng'],l['lat']].join(),
               "sdate":"1980-01-01",
               "edate":moment().format("YYYY-MM-DD"),
               "grid":"nrcc-model",
@@ -214,6 +289,12 @@ class ToolContents extends Component {
         })
     }
 
+    handleSummaryDataChange = (d) => {
+        this.setState({
+          summaryData: d
+        })
+    }
+
     handleViewChange = (v) => {
         this.setState({
           view: v
@@ -223,6 +304,12 @@ class ToolContents extends Component {
     handleDataIsLoadingChange = (b) => {
         this.setState({
           dataIsLoading: b
+        })
+    }
+
+    handleSummaryDataIsLoadingChange = (b) => {
+        this.setState({
+          summaryDataIsLoading: b
         })
     }
 
@@ -249,6 +336,7 @@ class ToolContents extends Component {
     render() {
 
         let display_DisplayChart;
+        let display_LocationSummary;
         let display_UserInput;
         if (this.state.pointData) {
             display_DisplayChart = <DisplayChart
@@ -265,6 +353,12 @@ class ToolContents extends Component {
                         view={this.state.view}
                         dataIsLoading={this.state.dataIsLoading}
                       />
+        }
+        if (this.state.summaryData) {
+            display_LocationSummary = <DisplayLocationSummary
+                      dataForTable={this.state.summaryData}
+                      dataIsLoading={this.state.summaryDataIsLoading}
+                    />
         }
 
         display_UserInput = <UserInput
@@ -304,6 +398,7 @@ class ToolContents extends Component {
 
                 <Grid container direction="row" justify="center">
 
+                  {this.state.view!=='summary' &&
                   <Grid item container direction="column" justify="flex-start" spacing={1} md>
                     <Hidden mdUp>
                         <Grid item>
@@ -316,12 +411,58 @@ class ToolContents extends Component {
                         </Grid>
                     </Hidden>
                   </Grid>
+                  }
 
-                  <Grid item container direction="column" justify="center" alignItems="center" spacing={1} md={9}>
-                      <Grid item style={{width:'100%'}}>
-                        {this.state.pointData && display_DisplayChart}
-                      </Grid>
+                  <Grid item container direction="column" justify="flex-start" alignItems="center" spacing={1} md={9}>
+                      {this.state.view==='summary' &&
                       <Grid item container direction="row" justify="center" alignItems="center" spacing={1}>
+                        <Grid item>
+                          {this.state.pointData && 
+                            <Button
+                              variant={this.state.view==='summary' ? "contained" : "outlined"} color="primary" size="small"
+                              onClick={() => this.handleViewChange('summary')}
+                            >
+                              Summary (all locations)
+                            </Button>
+                          }
+                        </Grid>
+                        <Grid item>
+                          {this.state.pointData && 
+                            <Button
+                              variant={this.state.view==='season-outlook' ? "contained" : "outlined"} color="primary" size="small"
+                              onClick={() => this.handleViewChange('season-outlook')}
+                            >
+                              Charts (selected location)
+                            </Button>
+                          }
+                        </Grid>
+                        <Grid item>
+                          {this.state.pointData && 
+                            <HelpToolPopover content={<HelpMain/>} />
+                          }
+                        </Grid>
+                      </Grid>
+                      }
+
+                      <Grid item style={{width:'100%'}}>
+                        {this.state.pointData && this.state.view!=='summary' && display_DisplayChart}
+                      </Grid>
+                      <Grid item style={{width:'100%'}}>
+                        {this.state.summaryData && this.state.view==='summary' && display_LocationSummary}
+                      </Grid>
+
+                      {this.state.view!=='summary' &&
+                      <Grid item container direction="row" justify="center" alignItems="center" spacing={1}>
+                        <Grid item>
+                          {this.state.pointData && 
+                            <Button
+                              variant={this.state.view==='summary' ? "contained" : "outlined"} color="primary" size="small"
+                              onClick={() => this.handleViewChange('summary')}
+                            >
+                              Summary Table
+                            </Button>
+                          }
+                        </Grid>
                         <Grid item>
                           {this.state.pointData && 
                             <Button
@@ -349,6 +490,8 @@ class ToolContents extends Component {
                           }
                         </Grid>
                       </Grid>
+                      }
+
                   </Grid>
 
                 </Grid>
