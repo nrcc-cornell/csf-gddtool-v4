@@ -40,8 +40,7 @@ class ToolContents extends Component {
         super(props);
         //this.toolName = 'TEST';
         this.toolName = 'CSF-GDDTOOL';
-        //this.token = 'YOUR_TOKEN';
-        this.token = 'pk.eyJ1IjoiYm5iMiIsImEiOiJjazJtYTgwajQwZnFiM29waGo4NHI1MWpnIn0.Xmb6eYeJArqqBQtKkWorUQ';
+        this.token = 'YOUR_TOKEN';
         this.gdd_list = ['86/50','50','49','48','47','46','45','44','43','42','41','40',
           '39','38','37','36','35','34','33','32']
         this.currentYear = moment().format('YYYY')
