@@ -262,8 +262,6 @@ class ToolContents extends Component {
 
     //handleLocationPickerOutput = (l,s) => {
     handleLocationPickerOutput = (s,l) => {
-        console.log(s)
-        console.log(l)
         // include additional items for each location (items like gdd_base, gdd_target, freeze_threshold, planting_date)
         let l_new = {}
         for (let k in l) {

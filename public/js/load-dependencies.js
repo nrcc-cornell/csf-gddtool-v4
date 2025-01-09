@@ -3,7 +3,7 @@ function loadToolDependencies() {
     var dependency;
     var element = document.getElementsByTagName("body")[0]
 
-    console.log('loading csf-gddtool-v4 css');
+    console.log('loading csf-gddtool-v4 CSS');
     dependency = document.createElement('link');
     dependency.setAttribute("rel","stylesheet");
     dependency.setAttribute("type","text/css");
