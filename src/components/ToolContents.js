@@ -40,7 +40,7 @@ class ToolContents extends Component {
         super(props);
         //this.toolName = 'TEST';
         this.toolName = 'CSF-GDDTOOL';
-        this.token = 'YOUR_TOKEN';
+        this.token = process.env.REACT_APP_MAPBOX_TOKEN;
         this.gdd_list = ['86/50','50','49','48','47','46','45','44','43','42','41','40',
           '39','38','37','36','35','34','33','32']
         this.currentYear = moment().format('YYYY')
@@ -387,6 +387,12 @@ class ToolContents extends Component {
                       newLocationsCallback={this.handleLocationPickerOutput}
                       token={this.token}
                       modalZIndex={150}
+                      bbox={{
+                        north: 49.458,
+                        south: 35.5,
+                        east: -66.833,
+                        west: -97.5
+                      }}
                     />
                   </Typography>
                 </Grid>
