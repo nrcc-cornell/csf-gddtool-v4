@@ -1,6 +1,6 @@
 {
   "name": "csf-gddtool-v4",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://nrcc-cornell.github.io/csf-gddtool-v4",
   "private": true,
   "dependencies": {
@@ -62,6 +62,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "7.16",
     "react-app-rewired": "^2.2.1",
     "rewire": "^6.0.0"
   }

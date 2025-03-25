@@ -75,6 +75,7 @@ class ToolContents extends Component {
     componentDidMount() {
         // Find all data for a given location
         if ((this.state.locations && this.state.selected)) {
+          console.log('v0.2.1');
           this.loadAllData()
         }
     }
